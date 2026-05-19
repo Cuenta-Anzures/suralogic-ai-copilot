@@ -27,14 +27,30 @@ export function AppShell({
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <div className="flex items-center gap-2.5">
-            <div className="grid size-8 place-items-center rounded-lg bg-primary shadow-[0_0_24px_-6px_var(--primary)]">
+            <div className="relative grid size-8 place-items-center rounded-lg bg-primary shadow-[0_0_24px_-6px_var(--primary)]">
               <div className="size-3 rounded-sm bg-background" />
+              <span
+                className="absolute -right-0.5 -top-0.5 size-2 rounded-full ring-2 ring-background"
+                style={{ background: "var(--owner)" }}
+                aria-hidden
+              />
             </div>
             <div className="leading-tight">
               <p className="text-[13px] font-semibold tracking-tight text-foreground">Suralogic</p>
-              <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                Insights
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                  Insights
+                </p>
+                <span
+                  className="rounded-sm px-1 py-px text-[8px] font-bold uppercase tracking-wider"
+                  style={{
+                    color: "var(--owner)",
+                    background: "color-mix(in oklab, var(--owner) 14%, transparent)",
+                  }}
+                >
+                  Owner
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
