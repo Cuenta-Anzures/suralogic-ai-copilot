@@ -65,7 +65,10 @@ export function AppShell({
               className="relative grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <Bell className="size-[18px]" />
-              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-primary ring-2 ring-background sl-pulse" />
+              <span
+                className="absolute right-2 top-2 size-1.5 rounded-full ring-2 ring-background sl-pulse"
+                style={{ background: "var(--owner)" }}
+              />
             </button>
             <div className="ml-1 grid size-8 place-items-center rounded-full bg-accent text-[11px] font-semibold text-foreground ring-1 ring-border">
               JR
