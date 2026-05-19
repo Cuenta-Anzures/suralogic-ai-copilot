@@ -72,8 +72,8 @@
   --card-foreground: oklch(0.985 0.002 270);
   --popover: oklch(0.22 0.006 270);
   --popover-foreground: oklch(0.985 0.002 270);
-  --primary: oklch(0.78 0.17 152);
-  --primary-foreground: oklch(0.16 0.02 152);
+  --primary: oklch(0.72 0.19 45);
+  --primary-foreground: oklch(0.16 0.02 45);
   --secondary: oklch(0.24 0.006 270);
   --secondary-foreground: oklch(0.985 0.002 270);
   --muted: oklch(0.24 0.006 270);
@@ -84,28 +84,28 @@
   --destructive-foreground: oklch(0.99 0.005 22);
   --border: oklch(0.28 0.006 270);
   --input: oklch(0.24 0.006 270);
-  --ring: oklch(0.78 0.17 152);
-  --chart-1: oklch(0.78 0.17 152);
-  --chart-2: oklch(0.68 0.18 250);
+  --ring: oklch(0.72 0.19 45);
+  --chart-1: oklch(0.72 0.19 45);
+  --chart-2: oklch(0.78 0.17 152);
   --chart-3: oklch(0.72 0.17 310);
   --chart-4: oklch(0.78 0.17 80);
   --chart-5: oklch(0.66 0.21 22);
   --sidebar: oklch(0.18 0.005 270);
   --sidebar-foreground: oklch(0.985 0.002 270);
-  --sidebar-primary: oklch(0.78 0.17 152);
-  --sidebar-primary-foreground: oklch(0.16 0.02 152);
+  --sidebar-primary: oklch(0.72 0.19 45);
+  --sidebar-primary-foreground: oklch(0.16 0.02 45);
   --sidebar-accent: oklch(0.24 0.006 270);
   --sidebar-accent-foreground: oklch(0.985 0.002 270);
   --sidebar-border: oklch(0.28 0.006 270);
-  --sidebar-ring: oklch(0.78 0.17 152);
+  --sidebar-ring: oklch(0.72 0.19 45);
   --success: oklch(0.78 0.17 152);
   --warning: oklch(0.82 0.16 80);
   --danger: oklch(0.66 0.21 22);
   --info: oklch(0.68 0.18 250);
-  /* Owner accent — used very sparingly to differentiate the
-     business-owner app from the operative POS app. */
-  --owner: oklch(0.72 0.19 45);
-  --owner-foreground: oklch(0.16 0.02 45);
+  /* Secondary accent — emerald, used sparingly for positive deltas
+     and success states. */
+  --owner: oklch(0.78 0.17 152);
+  --owner-foreground: oklch(0.16 0.02 152);
 }
 
 .dark {
