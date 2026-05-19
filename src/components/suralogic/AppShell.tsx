@@ -1,0 +1,140 @@
+import { Link, useLocation } from "@tanstack/react-router";
+import { Home, Package, Sparkles, Building2, BarChart3, Search, Bell, ChevronDown } from "lucide-react";
+import type { ReactNode } from "react";
+
+const navItems = [
+  { to: "/", label: "Inicio", icon: Home },
+  { to: "/inventario", label: "Inventario", icon: Package },
+  { to: "/insights", label: "IA", icon: Sparkles, primary: true },
+  { to: "/negocios", label: "Negocios", icon: Building2 },
+  { to: "/analitica", label: "Análisis", icon: BarChart3 },
+];
+
+export function AppShell({
+  children,
+  greeting,
+  subtitle,
+}: {
+  children: ReactNode;
+  greeting?: string;
+  subtitle?: string;
+}) {
+  const { pathname } = useLocation();
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
+          <div className="flex items-center gap-2.5">
+            <div className="grid size-8 place-items-center rounded-lg bg-primary shadow-[0_0_24px_-6px_var(--primary)]">
+              <div className="size-3 rounded-sm bg-background" />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[13px] font-semibold tracking-tight text-foreground">Suralogic</p>
+              <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                Insights
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              aria-label="Buscar"
+              className="grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <Search className="size-[18px]" />
+            </button>
+            <button
+              aria-label="Notificaciones"
+              className="relative grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <Bell className="size-[18px]" />
+              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-primary ring-2 ring-background sl-pulse" />
+            </button>
+            <div className="ml-1 grid size-8 place-items-center rounded-full bg-accent text-[11px] font-semibold text-foreground ring-1 ring-border">
+              JR
+            </div>
+          </div>
+        </div>
+
+        {/* Business selector */}
+        <div className="mx-auto max-w-2xl px-4 pb-3">
+          <button className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
+                SC
+              </span>
+              <div className="leading-tight">
+                <p className="text-[13px] font-medium text-foreground">Sucursal Centro</p>
+                <p className="text-[10px] text-muted-foreground">3 negocios · 8 sucursales</p>
+              </div>
+            </div>
+            <ChevronDown className="size-4 text-muted-foreground" />
+          </button>
+        </div>
+      </header>
+
+      {/* Optional greeting */}
+      {(greeting || subtitle) && (
+        <section className="mx-auto max-w-2xl px-4 pt-6 sl-fade-up">
+          {greeting && (
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground text-balance">
+              {greeting}
+            </h1>
+          )}
+          {subtitle && (
+            <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground text-pretty">
+              {subtitle}
+            </p>
+          )}
+        </section>
+      )}
+
+      <main className="mx-auto max-w-2xl px-4 pb-32 pt-4">{children}</main>
+
+      {/* Bottom nav */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/60 bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-2xl items-center justify-around px-4 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.to;
+            if (item.primary) {
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="-mt-6 grid size-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 ring-4 ring-background transition-transform active:scale-95"
+                  aria-label={item.label}
+                >
+                  <Icon className="size-5" />
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="flex flex-1 flex-col items-center gap-0.5 py-1.5"
+              >
+                <Icon
+                  className={
+                    "size-[20px] transition-colors " +
+                    (active ? "text-foreground" : "text-muted-foreground")
+                  }
+                />
+                <span
+                  className={
+                    "text-[10px] font-medium transition-colors " +
+                    (active ? "text-foreground" : "text-muted-foreground")
+                  }
+                >
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  );
+}
