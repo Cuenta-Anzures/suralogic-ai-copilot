@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 
 const navItems = [
   { to: "/", label: "Inicio", icon: Home },
-  { to: "/inventario", label: "Inventario", icon: Package },
+  { to: "/inventario", label: "Equipos", icon: Package },
   { to: "/insights", label: "IA", icon: Sparkles, primary: true },
-  { to: "/negocios", label: "Negocios", icon: Building2 },
+  { to: "/negocios", label: "Flota", icon: Building2 },
   { to: "/analitica", label: "Análisis", icon: BarChart3 },
 ];
 
@@ -79,15 +79,15 @@ export function AppShell({
         {/* Business selector */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
           <button className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card">
-            <div className="flex items-center gap-2.5">
-              <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
-                SC
-              </span>
-              <div className="leading-tight">
-                <p className="text-[13px] font-medium text-foreground">Sucursal Centro</p>
-                <p className="text-[10px] text-muted-foreground">3 negocios · 8 sucursales</p>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
+              AG
+            </span>
+            <div className="leading-tight">
+              <p className="text-[13px] font-medium text-foreground">AGLA Plataformas</p>
+              <p className="text-[10px] text-muted-foreground">3 equipos · 2 socios · 23–25</p>
             </div>
+          </div>
             <ChevronDown className="size-4 text-muted-foreground" />
           </button>
         </div>
