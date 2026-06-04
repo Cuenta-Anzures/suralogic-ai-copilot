@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, SectionHeader, Delta, StatusPill } from "@/components/suralogic/primitives";
 import { Sparkline, HealthRing, HourlyBars, Heatmap } from "@/components/suralogic/charts";
-import { kpis, insights, hourly, heatmap, inventory } from "@/data/mockData";
-import { Sparkles, ChevronRight, TrendingUp, AlertTriangle } from "lucide-react";
+import { kpis, insights, hourly, heatmap, inventory, flujoCaja, socios, rentasRecientes } from "@/data/mockData";
+import { Sparkles, ChevronRight, TrendingUp, AlertTriangle, Wallet, Users } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,22 +24,63 @@ function Dashboard() {
 
   return (
     <AppShell
-      greeting="Buenos días, Javier"
-      subtitle="Tu negocio creció 12.4% vs la semana pasada. Stock saludable en 4 de 5 categorías."
+      greeting="Buenos días, Daniel"
+      subtitle="Tu flota generó $1.97M facturados con 92% utilización en MB 001. Hay $234K pendientes de cobro."
     >
       {/* Health + summary */}
       <Card className="flex items-center justify-between sl-fade-up">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-            Salud del negocio
+            Salud financiera
           </p>
-          <p className="mt-1 text-3xl font-semibold tracking-tight text-foreground">82<span className="text-base text-muted-foreground">/100</span></p>
+          <p className="mt-1 text-3xl font-semibold tracking-tight text-foreground">78<span className="text-base text-muted-foreground">/100</span></p>
           <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
-            <TrendingUp className="size-3" /> +2.4 vs mes ant.
+            <TrendingUp className="size-3" /> +4.1 vs mes ant.
           </div>
+          <p className="mt-2 text-[10px] text-muted-foreground">Cobranza pesa el score</p>
         </div>
-        <HealthRing value={82} />
+        <HealthRing value={78} />
       </Card>
+
+      {/* Caja & socios */}
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <Card className="sl-fade-up">
+          <div className="flex items-center gap-2">
+            <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary">
+              <Wallet className="size-3.5" />
+            </span>
+            <p className="text-[11px] font-medium text-muted-foreground">Caja chica</p>
+          </div>
+          <p className="mt-2 text-lg font-semibold tabular-nums text-foreground">
+            ${flujoCaja.cajaActual.toLocaleString("es-MX", { maximumFractionDigits: 0 })}
+          </p>
+          <p className="text-[10px] text-muted-foreground">Líquido disponible</p>
+        </Card>
+        <Card className="sl-fade-up" >
+          <div className="flex items-center gap-2">
+            <span
+              className="grid size-7 place-items-center rounded-md"
+              style={{
+                background: "color-mix(in oklab, var(--owner) 18%, transparent)",
+                color: "var(--owner)",
+              }}
+            >
+              <Users className="size-3.5" />
+            </span>
+            <p className="text-[11px] font-medium text-muted-foreground">Socios 50/50</p>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            {socios.map((s) => (
+              <div key={s.name} className="flex-1">
+                <p className="text-[10px] text-muted-foreground">{s.initials}</p>
+                <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                  ${(s.pendiente / 1000).toFixed(0)}K
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       {/* KPIs */}
       <div className="mt-4 grid grid-cols-2 gap-3">
@@ -134,12 +175,12 @@ function Dashboard() {
       <div className="mt-6">
         <Card className="sl-fade-up">
           <SectionHeader
-            title="Ventas por hora"
-            hint={`Pico a las ${hourly[peak].hour}:00 hrs`}
+            title="Ingresos por mes · 2024"
+            hint={`Mes pico: ${hourly[peak].hour} · $${hourly[peak].v}K`}
             action={
               <div className="flex gap-1 rounded-lg bg-accent p-0.5 text-[10px] font-medium">
-                <button className="rounded-md bg-card px-2 py-1 text-foreground">Hoy</button>
-                <button className="px-2 py-1 text-muted-foreground">Sem</button>
+                <button className="rounded-md bg-card px-2 py-1 text-foreground">2024</button>
+                <button className="px-2 py-1 text-muted-foreground">2025</button>
               </div>
             }
           />
@@ -151,12 +192,12 @@ function Dashboard() {
       <div className="mt-4">
         <Card className="sl-fade-up">
           <SectionHeader
-            title="Mapa de calor semanal"
-            hint="Intensidad de tráfico · L–D · 08:00–20:00"
+            title="Utilización de flota"
+            hint="Por equipo · meses del año"
           />
           <Heatmap data={heatmap} />
           <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
-            <span>Bajo</span>
+            <span>Inactivo</span>
             <div className="flex gap-1">
               {[0.15, 0.35, 0.6, 0.85, 1].map((v, i) => (
                 <div
@@ -168,47 +209,45 @@ function Dashboard() {
                 />
               ))}
             </div>
-            <span>Alto</span>
+            <span>100% rentado</span>
           </div>
         </Card>
       </div>
 
-      {/* Quick inventory */}
+      {/* Rentas recientes */}
       <div className="mt-6">
         <SectionHeader
-          title="Inventario crítico"
+          title="Rentas recientes"
           action={
             <Link to="/inventario" className="text-[12px] font-medium text-primary">
-              Gestionar
+              Ver flota
             </Link>
           }
         />
         <div className="space-y-2">
-          {inventory.slice(0, 3).map((p) => (
-            <Link
-              to="/productos/$productId"
-              params={{ productId: p.id }}
-              key={p.id}
-              className="block"
-            >
-              <Card className="flex items-center gap-3 hover:bg-card">
-                <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-accent text-xl">
-                  {p.image}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-medium text-foreground">{p.name}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {p.stock} uds · min {p.min}
-                  </p>
-                </div>
+          {rentasRecientes.slice(0, 4).map((r) => (
+            <Card key={r.folio} className="flex items-center gap-3">
+              <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-base">
+                🏗️
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13px] font-medium text-foreground">
+                  {r.folio} · {r.equipo}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {r.cliente} · {r.dias} días
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                  ${r.total.toLocaleString("es-MX")}
+                </p>
                 <StatusPill
-                  label={
-                    p.status === "danger" ? "Riesgo" : p.status === "warning" ? "Lento" : "OK"
-                  }
-                  tone={p.status}
+                  label={r.status === "pagado" ? "Pagado" : "Pendiente"}
+                  tone={r.status === "pagado" ? "success" : "warning"}
                 />
-              </Card>
-            </Link>
+              </div>
+            </Card>
           ))}
         </div>
       </div>
