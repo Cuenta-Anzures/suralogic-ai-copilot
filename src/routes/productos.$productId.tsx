@@ -22,13 +22,13 @@ export const Route = createFileRoute("/productos/$productId")({
   },
   component: ProductoDetalle,
   notFoundComponent: () => (
-    <AppShell greeting="Producto no encontrado">
+    <AppShell greeting="Equipo no encontrado">
       <Card>
         <p className="text-sm text-muted-foreground">
-          Este SKU ya no está disponible o fue eliminado.
+          Este equipo no está registrado en la flota.
         </p>
         <Link to="/inventario" className="mt-3 inline-block text-[12px] font-medium text-primary">
-          ← Volver al inventario
+          ← Volver a la flota
         </Link>
       </Card>
     </AppShell>
@@ -43,13 +43,13 @@ export const Route = createFileRoute("/productos/$productId")({
 });
 
 const forecastData = [
-  { d: "Lun", real: 22 },
-  { d: "Mar", real: 28 },
-  { d: "Mié", real: 34 },
-  { d: "Jue", real: 30, forecast: 30 },
-  { d: "Vie", forecast: 42 },
-  { d: "Sáb", forecast: 55 },
-  { d: "Dom", forecast: 48 },
+  { d: "Jun", real: 40 },
+  { d: "Jul", real: 40 },
+  { d: "Ago", real: 48 },
+  { d: "Sep", real: 40, forecast: 40 },
+  { d: "Oct", forecast: 48 },
+  { d: "Nov", forecast: 56 },
+  { d: "Dic", forecast: 48 },
 ];
 
 function ProductoDetalle() {
@@ -61,7 +61,7 @@ function ProductoDetalle() {
         to="/inventario"
         className="mb-3 inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground"
       >
-        <ChevronLeft className="size-4" /> Inventario
+        <ChevronLeft className="size-4" /> Flota
       </Link>
 
       {/* Hero */}
@@ -71,7 +71,7 @@ function ProductoDetalle() {
         </div>
         <div className="mt-4 flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-mono text-muted-foreground">{p.sku}</p>
+            <p className="text-[10px] font-mono text-muted-foreground">FOLIO {p.sku}</p>
             <h2 className="mt-0.5 text-[18px] font-semibold tracking-tight text-foreground">
               {p.name}
             </h2>
@@ -95,14 +95,18 @@ function ProductoDetalle() {
               Recomendación IA
             </p>
             <p className="mt-0.5 text-[13px] font-semibold text-foreground">
-              Recomendamos reabastecer este producto en {p.days} días.
+              {p.status === "danger"
+                ? "Equipo subutilizado: prospectar nuevos clientes."
+                : p.status === "warning"
+                ? "Programa mantenimiento preventivo este mes."
+                : "Equipo rentable: considera replicar el modelo."}
             </p>
             <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-              Con la tasa de venta actual, el stock llegará a cero antes del próximo ciclo. Pide{" "}
-              <span className="text-foreground">60 unidades</span> para mantener cobertura de 30 días.
+              Lleva <span className="text-foreground">{p.days} días</span> rentado acumulados con{" "}
+              <span className="text-foreground">{p.stock}% utilización</span> YTD.
             </p>
             <button className="mt-2 inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground">
-              Generar orden de compra
+              Ver bitácora completa
             </button>
           </div>
         </div>
@@ -111,19 +115,19 @@ function ProductoDetalle() {
       {/* Stats */}
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Stock</p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.stock}</p>
-          <p className="text-[10px] text-muted-foreground">min {p.min}</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Utilización</p>
+          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.stock}%</p>
+          <p className="text-[10px] text-muted-foreground">meta {p.min}%</p>
         </Card>
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Margen</p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.margin}%</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días rent.</p>
+          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.days}</p>
           <Delta value={2.1} />
         </Card>
         <Card>
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rotación</p>
           <p className="mt-1 text-lg font-semibold text-foreground">{p.rotation}</p>
-          <p className="text-[10px] text-muted-foreground">{p.days}d</p>
+          <p className="text-[10px] text-muted-foreground">flota</p>
         </Card>
       </div>
 
@@ -131,8 +135,8 @@ function ProductoDetalle() {
       <Card className="mt-4 sl-fade-up">
         <div className="mb-2 flex items-center justify-between">
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Historial de ventas</h3>
-            <p className="text-[11px] text-muted-foreground">Últimos 7 días</p>
+            <h3 className="text-[14px] font-semibold text-foreground">Historial de rentas</h3>
+            <p className="text-[11px] text-muted-foreground">Últimos 7 meses · utilización %</p>
           </div>
           <Delta value={p.status === "danger" ? -18 : 12} />
         </div>
@@ -143,8 +147,8 @@ function ProductoDetalle() {
 
       {/* Forecast */}
       <Card className="mt-4 sl-fade-up">
-        <h3 className="text-[14px] font-semibold text-foreground">Predicción de demanda</h3>
-        <p className="text-[11px] text-muted-foreground">Línea sólida: real · punteada: forecast IA</p>
+        <h3 className="text-[14px] font-semibold text-foreground">Forecast de ingresos</h3>
+        <p className="text-[11px] text-muted-foreground">Sólida: real · punteada: predicción IA</p>
         <div className="mt-3">
           <ForecastLine data={forecastData} />
         </div>
@@ -152,12 +156,12 @@ function ProductoDetalle() {
 
       {/* Movements */}
       <Card className="mt-4 sl-fade-up">
-        <h3 className="mb-3 text-[14px] font-semibold text-foreground">Movimientos recientes</h3>
+        <h3 className="mb-3 text-[14px] font-semibold text-foreground">Eventos recientes</h3>
         <ul className="space-y-3">
           {[
-            { icon: Package, label: "Entrada · proveedor A", qty: "+40", time: "Ayer 14:20" },
-            { icon: TrendingUp, label: "Venta · Sucursal Centro", qty: "-12", time: "Hoy 11:05" },
-            { icon: AlertTriangle, label: "Ajuste · merma reportada", qty: "-2", time: "Hoy 09:48" },
+            { icon: Package, label: "Recolección de equipo · SMTELCOM", qty: "MB", time: "Ayer 14:20" },
+            { icon: TrendingUp, label: "Renta facturada · PLAT-32", qty: "+$40K", time: "Hoy 11:05" },
+            { icon: AlertTriangle, label: "Mantenimiento programado", qty: "-$2.5K", time: "Hoy 09:48" },
           ].map((m, i) => (
             <li key={i} className="flex items-center gap-3">
               <div className="grid size-8 place-items-center rounded-lg bg-accent text-muted-foreground">
