@@ -36,7 +36,7 @@ function Insights() {
           El copiloto de tu negocio
         </h1>
         <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground text-pretty">
-          12 patrones detectados hoy · 3 acciones recomendadas con alto impacto.
+          Cobranza, utilización de flota y rentabilidad de cada plataforma analizados en tiempo real.
         </p>
       </div>
 
@@ -51,8 +51,8 @@ function Insights() {
           <p className="mt-1 text-base font-semibold text-destructive">2</p>
         </Card>
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Ahorro est.</p>
-          <p className="mt-1 text-base font-semibold text-primary">$18.4K</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Por cobrar</p>
+          <p className="mt-1 text-base font-semibold text-primary">$234K</p>
         </Card>
       </div>
 
@@ -108,7 +108,7 @@ function Insights() {
           Pregunta a Suralogic AI
         </p>
         <p className="mt-1 text-[13px] text-foreground">
-          “¿Qué producto debería liquidar este mes?”
+          "¿Vale la pena adquirir una MB 004 este año?"
         </p>
         <div className="mt-3 flex items-center gap-2 rounded-xl bg-accent/60 px-3 py-2 ring-1 ring-border">
           <Sparkles className="size-4 text-primary" />
