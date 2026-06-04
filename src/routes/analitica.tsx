@@ -26,26 +26,26 @@ function Analitica() {
 
   return (
     <AppShell
-      greeting="Analítica avanzada"
-      subtitle="Profundiza en patrones, predicciones y comportamiento por sucursal."
+      greeting="Analítica AGLA"
+      subtitle="Ingresos, utilización y forecasting de tu flota de plataformas."
     >
       <Card className="sl-fade-up">
-        <SectionHeader title="Forecast semanal" hint="Proyección IA · próximos 3 días" />
+        <SectionHeader title="Forecast de ingresos" hint="Proyección IA · próximos 3 meses" />
         <ForecastLine data={forecast} />
       </Card>
 
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Ventas por hora" hint={`Pico ${hourly[peak].hour}:00`} />
+        <SectionHeader title="Ingresos mensuales 2024" hint={`Mes pico: ${hourly[peak].hour}`} />
         <HourlyBars data={hourly} peakIndex={peak} />
       </Card>
 
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Mapa de calor semanal" hint="L–D · 08:00–20:00" />
+        <SectionHeader title="Utilización de flota" hint="MB001 · MB002 · MB003 · por mes" />
         <Heatmap data={heatmap} />
       </Card>
 
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Top productos" hint="Por velocidad de venta" />
+        <SectionHeader title="Top equipos" hint="Por facturado y utilización" />
         <div className="space-y-3">
           {top.map((p) => (
             <div key={p.id}>
