@@ -36,7 +36,7 @@ function Insights() {
           El copiloto de tu negocio
         </h1>
         <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground text-pretty">
-          Cobranza, utilización de flota y rentabilidad de cada plataforma analizados en tiempo real.
+          Cobranza, utilización y rentabilidad de cada unidad analizadas en tiempo real.
         </p>
       </div>
 
@@ -108,7 +108,7 @@ function Insights() {
           Pregunta a Suralogic AI
         </p>
         <p className="mt-1 text-[13px] text-foreground">
-          "¿Vale la pena adquirir una MB 004 este año?"
+          "¿Vale la pena ampliar mi capacidad este año?"
         </p>
         <div className="mt-3 flex items-center gap-2 rounded-xl bg-accent/60 px-3 py-2 ring-1 ring-border">
           <Sparkles className="size-4 text-primary" />

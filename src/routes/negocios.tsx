@@ -23,8 +23,8 @@ function Negocios() {
 
   return (
     <AppShell
-      greeting="Tu flota AGLA"
-      subtitle="3 plataformas activas · MB 001 lidera con 92% utilización."
+      greeting="Tu negocio"
+      subtitle="Unidades activas y desempeño en tiempo real."
     >
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
@@ -33,11 +33,11 @@ function Negocios() {
           <p className="mt-1 text-base font-semibold text-foreground">$1.97M</p>
         </Card>
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rentas</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Operaciones</p>
           <p className="mt-1 text-base font-semibold text-foreground">55</p>
         </Card>
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días rent.</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días activos</p>
           <p className="mt-1 text-base font-semibold text-primary">1,448</p>
         </Card>
       </div>
@@ -64,14 +64,14 @@ function Negocios() {
             </div>
           ))}
           <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border backdrop-blur">
-            <MapPin className="size-3" /> Nuevo León · 3 equipos en sitio
+            <MapPin className="size-3" /> Unidades en operación
           </div>
         </div>
       </Card>
 
       {/* Ranking */}
       <div className="mt-6">
-        <SectionHeader title="Ranking de equipos" hint="Por utilización y facturado YTD" />
+        <SectionHeader title="Ranking" hint="Por desempeño y facturado YTD" />
         <div className="space-y-3">
           {ranked.map((b, i) => (
             <Card key={b.id} className="sl-fade-up">
@@ -110,7 +110,7 @@ function Negocios() {
                     />
                   </div>
                   <p className="mt-1.5 text-[10px] text-muted-foreground">
-                    {b.tickets} rentas · días en sitio
+                    {b.tickets} operaciones · días activos
                   </p>
                 </div>
                 <div className="w-16">

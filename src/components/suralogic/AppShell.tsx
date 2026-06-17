@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 
 const navItems = [
   { to: "/", label: "Inicio", icon: Home },
-  { to: "/inventario", label: "Equipos", icon: Package },
+  { to: "/inventario", label: "Inventario", icon: Package },
   { to: "/copiloto", label: "Copiloto", icon: MessageSquare, primary: true },
-  { to: "/negocios", label: "Flota", icon: Building2 },
+  { to: "/negocios", label: "Negocio", icon: Building2 },
   { to: "/analitica", label: "Análisis", icon: BarChart3 },
 ];
 
@@ -81,11 +81,11 @@ export function AppShell({
           <button className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card">
           <div className="flex items-center gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
-              AG
+              SL
             </span>
             <div className="leading-tight">
-              <p className="text-[13px] font-medium text-foreground">AGLA Plataformas</p>
-              <p className="text-[10px] text-muted-foreground">3 equipos · 2 socios · 23–25</p>
+              <p className="text-[13px] font-medium text-foreground">Mi negocio</p>
+              <p className="text-[10px] text-muted-foreground">Datos en tiempo real</p>
             </div>
           </div>
             <ChevronDown className="size-4 text-muted-foreground" />
