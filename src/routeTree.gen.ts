@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as NegociosRouteImport } from './routes/negocios'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as CopilotoRouteImport } from './routes/copiloto'
 import { Route as AnaliticaRouteImport } from './routes/analitica'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductosProductIdRouteImport } from './routes/productos.$productId'
@@ -29,6 +30,11 @@ const InventarioRoute = InventarioRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopilotoRoute = CopilotoRouteImport.update({
+  id: '/copiloto',
+  path: '/copiloto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnaliticaRoute = AnaliticaRouteImport.update({
@@ -50,6 +56,7 @@ const ProductosProductIdRoute = ProductosProductIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
+  '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
   '/negocios': typeof NegociosRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
+  '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
   '/negocios': typeof NegociosRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
+  '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
   '/negocios': typeof NegociosRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analitica'
+    | '/copiloto'
     | '/insights'
     | '/inventario'
     | '/negocios'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analitica'
+    | '/copiloto'
     | '/insights'
     | '/inventario'
     | '/negocios'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analitica'
+    | '/copiloto'
     | '/insights'
     | '/inventario'
     | '/negocios'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnaliticaRoute: typeof AnaliticaRoute
+  CopilotoRoute: typeof CopilotoRoute
   InsightsRoute: typeof InsightsRoute
   InventarioRoute: typeof InventarioRoute
   NegociosRoute: typeof NegociosRoute
@@ -131,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/copiloto': {
+      id: '/copiloto'
+      path: '/copiloto'
+      fullPath: '/copiloto'
+      preLoaderRoute: typeof CopilotoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analitica': {
       id: '/analitica'
       path: '/analitica'
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnaliticaRoute: AnaliticaRoute,
+  CopilotoRoute: CopilotoRoute,
   InsightsRoute: InsightsRoute,
   InventarioRoute: InventarioRoute,
   NegociosRoute: NegociosRoute,
@@ -166,13 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
