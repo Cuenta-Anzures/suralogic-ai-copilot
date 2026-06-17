@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Package, Sparkles, Building2, BarChart3, Search, Bell, ChevronDown, MessageSquare } from "lucide-react";
+import { Home, Package, Building2, BarChart3, Search, Bell, ChevronDown, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 
 const navItems = [
