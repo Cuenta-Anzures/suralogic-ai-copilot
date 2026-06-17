@@ -26,8 +26,8 @@ function Analitica() {
 
   return (
     <AppShell
-      greeting="Analítica AGLA"
-      subtitle="Ingresos, utilización y forecasting de tu flota de plataformas."
+      greeting="Analítica"
+      subtitle="Ingresos, utilización y forecasting de tu negocio."
     >
       <Card className="sl-fade-up">
         <SectionHeader title="Forecast de ingresos" hint="Proyección IA · próximos 3 meses" />
@@ -40,12 +40,12 @@ function Analitica() {
       </Card>
 
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Utilización de flota" hint="MB001 · MB002 · MB003 · por mes" />
+        <SectionHeader title="Utilización" hint="Por unidad · por mes" />
         <Heatmap data={heatmap} />
       </Card>
 
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Top equipos" hint="Por facturado y utilización" />
+        <SectionHeader title="Top unidades" hint="Por facturado y utilización" />
         <div className="space-y-3">
           {top.map((p) => (
             <div key={p.id}>

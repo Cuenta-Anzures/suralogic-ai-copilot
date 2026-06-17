@@ -25,7 +25,7 @@ function Dashboard() {
   return (
     <AppShell
       greeting="Buenos días, Daniel"
-      subtitle="Tu flota generó $1.97M facturados con 92% utilización en MB 001. Hay $234K pendientes de cobro."
+      subtitle="Tu negocio generó $1.97M facturados con 92% utilización en tu unidad líder. Hay $234K pendientes de cobro."
     >
       {/* Health + summary */}
       <Card className="flex items-center justify-between sl-fade-up">
@@ -192,8 +192,8 @@ function Dashboard() {
       <div className="mt-4">
         <Card className="sl-fade-up">
           <SectionHeader
-            title="Utilización de flota"
-            hint="Por equipo · meses del año"
+            title="Utilización"
+            hint="Por unidad · meses del año"
           />
           <Heatmap data={heatmap} />
           <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
@@ -214,13 +214,13 @@ function Dashboard() {
         </Card>
       </div>
 
-      {/* Rentas recientes */}
+      {/* Historial */}
       <div className="mt-6">
         <SectionHeader
-          title="Rentas recientes"
+          title="Historial"
           action={
             <Link to="/inventario" className="text-[12px] font-medium text-primary">
-              Ver flota
+              Ver inventario
             </Link>
           }
         />

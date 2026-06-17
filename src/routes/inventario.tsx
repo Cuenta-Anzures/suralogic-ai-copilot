@@ -36,15 +36,15 @@ function Inventario() {
 
   return (
     <AppShell
-      greeting="Flota de equipos"
-      subtitle="3 plataformas elevadoras · 1,448 días rentados acumulados · 1 equipo subutilizado."
+      greeting="Inventario"
+      subtitle="Unidades activas, utilización acumulada y alertas de desempeño."
     >
       {/* Search */}
       <div className="mt-2 flex items-center gap-2">
         <div className="flex flex-1 items-center gap-2 rounded-xl bg-card/70 px-3 py-2.5 ring-1 ring-border">
           <Search className="size-4 text-muted-foreground" />
           <input
-            placeholder="Buscar equipo, MB…"
+            placeholder="Buscar unidad…"
             className="w-full bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
         </div>
@@ -101,7 +101,7 @@ function Inventario() {
                     <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
                       <span>{p.category}</span>
                       <span>·</span>
-                      <span>{p.days}d restantes</span>
+                      <span>{p.days}d activos</span>
                     </div>
                   </div>
                   <StatusPill

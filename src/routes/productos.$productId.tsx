@@ -22,13 +22,13 @@ export const Route = createFileRoute("/productos/$productId")({
   },
   component: ProductoDetalle,
   notFoundComponent: () => (
-    <AppShell greeting="Equipo no encontrado">
+    <AppShell greeting="Unidad no encontrada">
       <Card>
         <p className="text-sm text-muted-foreground">
-          Este equipo no está registrado en la flota.
+          Esta unidad no está registrada en tu inventario.
         </p>
         <Link to="/inventario" className="mt-3 inline-block text-[12px] font-medium text-primary">
-          ← Volver a la flota
+          ← Volver al inventario
         </Link>
       </Card>
     </AppShell>
@@ -61,7 +61,7 @@ function ProductoDetalle() {
         to="/inventario"
         className="mb-3 inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground"
       >
-        <ChevronLeft className="size-4" /> Flota
+        <ChevronLeft className="size-4" /> Inventario
       </Link>
 
       {/* Hero */}
@@ -96,13 +96,13 @@ function ProductoDetalle() {
             </p>
             <p className="mt-0.5 text-[13px] font-semibold text-foreground">
               {p.status === "danger"
-                ? "Equipo subutilizado: prospectar nuevos clientes."
+                ? "Unidad subutilizada: prospectar nuevos clientes."
                 : p.status === "warning"
                 ? "Programa mantenimiento preventivo este mes."
-                : "Equipo rentable: considera replicar el modelo."}
+                : "Unidad rentable: considera replicar el modelo."}
             </p>
             <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-              Lleva <span className="text-foreground">{p.days} días</span> rentado acumulados con{" "}
+              Lleva <span className="text-foreground">{p.days} días</span> activos acumulados con{" "}
               <span className="text-foreground">{p.stock}% utilización</span> YTD.
             </p>
             <button className="mt-2 inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground">
@@ -120,14 +120,14 @@ function ProductoDetalle() {
           <p className="text-[10px] text-muted-foreground">meta {p.min}%</p>
         </Card>
         <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días rent.</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días activos</p>
           <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.days}</p>
           <Delta value={2.1} />
         </Card>
         <Card>
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rotación</p>
           <p className="mt-1 text-lg font-semibold text-foreground">{p.rotation}</p>
-          <p className="text-[10px] text-muted-foreground">flota</p>
+          <p className="text-[10px] text-muted-foreground">inventario</p>
         </Card>
       </div>
 
@@ -135,7 +135,7 @@ function ProductoDetalle() {
       <Card className="mt-4 sl-fade-up">
         <div className="mb-2 flex items-center justify-between">
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Historial de rentas</h3>
+            <h3 className="text-[14px] font-semibold text-foreground">Historial</h3>
             <p className="text-[11px] text-muted-foreground">Últimos 7 meses · utilización %</p>
           </div>
           <Delta value={p.status === "danger" ? -18 : 12} />
@@ -159,8 +159,8 @@ function ProductoDetalle() {
         <h3 className="mb-3 text-[14px] font-semibold text-foreground">Eventos recientes</h3>
         <ul className="space-y-3">
           {[
-            { icon: Package, label: "Recolección de equipo · SMTELCOM", qty: "MB", time: "Ayer 14:20" },
-            { icon: TrendingUp, label: "Renta facturada · PLAT-32", qty: "+$40K", time: "Hoy 11:05" },
+            { icon: Package, label: "Recolección de unidad", qty: "—", time: "Ayer 14:20" },
+            { icon: TrendingUp, label: "Operación facturada", qty: "+$40K", time: "Hoy 11:05" },
             { icon: AlertTriangle, label: "Mantenimiento programado", qty: "-$2.5K", time: "Hoy 09:48" },
           ].map((m, i) => (
             <li key={i} className="flex items-center gap-3">
