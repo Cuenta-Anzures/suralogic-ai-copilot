@@ -64,7 +64,7 @@ export async function* streamOllamaChat(messages: ChatMessage[], opts?: {
 }
 
 export function buildSystemPrompt(contextJson: unknown) {
-  return `Eres Suralogic Copilot, un gerente digital analítico para dueños de negocio.
+  return `Eres Flux Ops AI Copilot, un gerente digital analítico para dueños de negocio.
 Respondes en español, claro y conciso, con foco en decisiones accionables.
 
 Reglas:
