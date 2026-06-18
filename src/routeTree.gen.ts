@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NegociosRouteImport } from './routes/negocios'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as CopilotoRouteImport } from './routes/copiloto'
@@ -17,11 +16,6 @@ import { Route as AnaliticaRouteImport } from './routes/analitica'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductosProductIdRouteImport } from './routes/productos.$productId'
 
-const NegociosRoute = NegociosRouteImport.update({
-  id: '/negocios',
-  path: '/negocios',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const InventarioRoute = InventarioRouteImport.update({
   id: '/inventario',
   path: '/inventario',
@@ -59,7 +53,6 @@ export interface FileRoutesByFullPath {
   '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -68,7 +61,6 @@ export interface FileRoutesByTo {
   '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesById {
@@ -78,7 +70,6 @@ export interface FileRoutesById {
   '/copiloto': typeof CopilotoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRouteTypes {
@@ -89,7 +80,6 @@ export interface FileRouteTypes {
     | '/copiloto'
     | '/insights'
     | '/inventario'
-    | '/negocios'
     | '/productos/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -98,7 +88,6 @@ export interface FileRouteTypes {
     | '/copiloto'
     | '/insights'
     | '/inventario'
-    | '/negocios'
     | '/productos/$productId'
   id:
     | '__root__'
@@ -107,7 +96,6 @@ export interface FileRouteTypes {
     | '/copiloto'
     | '/insights'
     | '/inventario'
-    | '/negocios'
     | '/productos/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -117,19 +105,11 @@ export interface RootRouteChildren {
   CopilotoRoute: typeof CopilotoRoute
   InsightsRoute: typeof InsightsRoute
   InventarioRoute: typeof InventarioRoute
-  NegociosRoute: typeof NegociosRoute
   ProductosProductIdRoute: typeof ProductosProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/negocios': {
-      id: '/negocios'
-      path: '/negocios'
-      fullPath: '/negocios'
-      preLoaderRoute: typeof NegociosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/inventario': {
       id: '/inventario'
       path: '/inventario'
@@ -181,7 +161,6 @@ const rootRouteChildren: RootRouteChildren = {
   CopilotoRoute: CopilotoRoute,
   InsightsRoute: InsightsRoute,
   InventarioRoute: InventarioRoute,
-  NegociosRoute: NegociosRoute,
   ProductosProductIdRoute: ProductosProductIdRoute,
 }
 export const routeTree = rootRouteImport
