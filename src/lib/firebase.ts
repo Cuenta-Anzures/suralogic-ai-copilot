@@ -1,12 +1,10 @@
-// Firebase placeholder — la app está preparada para conectar a Firebase
-// cuando Flux Ops empiece a alimentar los datos operativos.
+// Firebase placeholder — Flux Ops AI Copilot está preparado para sustituir
+// la fuente CSV por Firestore sin tocar las pantallas.
 //
 // Para activarlo:
-// 1. bun add firebase
-// 2. Definir las variables VITE_FIREBASE_* en el entorno
-// 3. Cambiar VITE_DATA_SOURCE=firebase
-//
-// Mientras tanto, dataSource.ts cae al mock local sin romper la UI.
+//   1. bun add firebase
+//   2. Definir VITE_FIREBASE_* en el entorno
+//   3. Implementar fetchCollection() y enrutar desde dataSource.ts
 
 export type FirebaseConfig = {
   apiKey: string;
@@ -29,7 +27,7 @@ export const firebaseConfig: Partial<FirebaseConfig> = {
 export const isFirebaseConfigured =
   !!firebaseConfig.projectId && !!firebaseConfig.apiKey;
 
-// Implementación real (descomenta cuando instales firebase):
+// Implementación real (descomentar cuando se instale firebase):
 //
 // import { initializeApp, getApps } from "firebase/app";
 // import { getFirestore, collection, getDocs } from "firebase/firestore";

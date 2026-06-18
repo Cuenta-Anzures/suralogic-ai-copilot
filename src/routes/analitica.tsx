@@ -1,68 +1,97 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, SectionHeader } from "@/components/suralogic/primitives";
-import { ForecastLine, HourlyBars, Heatmap } from "@/components/suralogic/charts";
-import { hourly, heatmap, forecast, inventory } from "@/data/mockData";
+import { ForecastLine, HourlyBars } from "@/components/suralogic/charts";
+import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/analitica")({
   head: () => ({
     meta: [
-      { title: "Analítica · Suralogic Insights" },
-      {
-        name: "description",
-        content: "Gráficas avanzadas: ventas por hora, mapa de calor, forecast y comparativo de sucursales.",
-      },
+      { title: "Análisis · Flux Ops" },
+      { name: "description", content: "Predicciones, ingresos por mes, top productos y métodos de pago." },
     ],
   }),
   component: Analitica,
 });
 
 function Analitica() {
-  const peak = hourly.reduce((maxI, h, i, arr) => (h.v > arr[maxI].v ? i : maxI), 0);
-  const top = [...inventory]
-    .sort((a, b) => b.trend[b.trend.length - 1] - a.trend[a.trend.length - 1])
-    .slice(0, 4);
-  const maxTrend = Math.max(...top.map((t) => t.trend[t.trend.length - 1]));
+  const { data: businesses } = useBusinesses();
+  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+
+  if (isLoading || !snap) {
+    return (
+      <AppShell greeting="Análisis">
+        <div className="grid place-items-center py-20">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  const monthBars = snap.ingresosPorMes.map((m) => ({ hour: m.mes, v: Math.round(m.total / 1000) }));
+  const peak = monthBars.length
+    ? monthBars.reduce((maxI, h, i) => (h.v > monthBars[maxI].v ? i : maxI), 0)
+    : 0;
+
+  const maxTop = Math.max(1, ...snap.topProductos.map((t) => t.total));
 
   return (
-    <AppShell
-      greeting="Analítica"
-      subtitle="Ingresos, utilización y forecasting de tu negocio."
-    >
-      <Card className="sl-fade-up">
-        <SectionHeader title="Forecast de ingresos" hint="Proyección IA · próximos 3 meses" />
-        <ForecastLine data={forecast} />
-      </Card>
+    <AppShell greeting="Análisis" subtitle="Predicciones y desempeño consolidado.">
+      {/* Forecast */}
+      {snap.forecast.length > 0 && (
+        <Card className="sl-fade-up">
+          <SectionHeader title="Predicción de ingresos" hint="Línea sólida: histórico · punteada: predicción IA" />
+          <ForecastLine data={snap.forecast} />
+        </Card>
+      )}
 
-      <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Ingresos mensuales 2024" hint={`Mes pico: ${hourly[peak].hour}`} />
-        <HourlyBars data={hourly} peakIndex={peak} />
-      </Card>
+      {/* Ingresos por mes */}
+      {monthBars.length > 0 && (
+        <Card className="mt-4 sl-fade-up">
+          <SectionHeader title="Ingresos por mes" hint={`Pico: ${monthBars[peak].hour}`} />
+          <HourlyBars data={monthBars} peakIndex={peak} />
+        </Card>
+      )}
 
+      {/* Top productos */}
       <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Utilización" hint="Por unidad · por mes" />
-        <Heatmap data={heatmap} />
-      </Card>
-
-      <Card className="mt-4 sl-fade-up">
-        <SectionHeader title="Top unidades" hint="Por facturado y utilización" />
+        <SectionHeader title="Top productos" hint="Por ingresos generados" />
         <div className="space-y-3">
-          {top.map((p) => (
+          {snap.topProductos.slice(0, 6).map((p) => (
             <div key={p.id}>
               <div className="flex items-center justify-between text-[12px]">
-                <span className="flex items-center gap-2 text-foreground">
-                  <span className="text-base">{p.image}</span>
-                  <span className="truncate font-medium">{p.name}</span>
-                </span>
-                <span className="font-mono text-muted-foreground">
-                  {p.trend[p.trend.length - 1]}
-                </span>
+                <span className="truncate font-medium text-foreground">{p.nombre}</span>
+                <span className="font-mono text-muted-foreground">{fmtCompact(p.total)}</span>
               </div>
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-accent">
                 <div
                   className="h-full bg-primary"
-                  style={{ width: `${(p.trend[p.trend.length - 1] / maxTrend) * 100}%` }}
+                  style={{ width: `${(p.total / maxTop) * 100}%` }}
                 />
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                {p.unidades} unidades · {p.operaciones} operaciones · {p.share.toFixed(1)}% del ingreso
+              </p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Métodos de pago */}
+      <Card className="mt-4 sl-fade-up">
+        <SectionHeader title="Métodos de pago" hint="Distribución de ingresos" />
+        <div className="space-y-3">
+          {snap.ventasPorMetodoPago.map((m) => (
+            <div key={m.metodo}>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="font-medium capitalize text-foreground">{m.metodo}</span>
+                <span className="font-mono text-muted-foreground">
+                  {fmtCompact(m.total)} · {m.share.toFixed(1)}%
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-accent">
+                <div className="h-full bg-primary" style={{ width: `${m.share}%` }} />
               </div>
             </div>
           ))}

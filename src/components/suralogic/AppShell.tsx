@@ -1,13 +1,14 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Package, Building2, BarChart3, Search, Bell, ChevronDown, MessageSquare } from "lucide-react";
+import { Home, Package, Users, BarChart3, Search, Bell, ChevronDown, MessageSquare, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
+import { useAuth } from "@/lib/auth";
 
 const navItems = [
   { to: "/", label: "Inicio", icon: Home },
   { to: "/inventario", label: "Inventario", icon: Package },
   { to: "/copiloto", label: "Copiloto", icon: MessageSquare, primary: true },
-  { to: "/negocios", label: "Negocio", icon: Building2 },
   { to: "/analitica", label: "Análisis", icon: BarChart3 },
+  { to: "/equipo", label: "Personal", icon: Users },
 ];
 
 export function AppShell({
@@ -20,6 +21,14 @@ export function AppShell({
   subtitle?: string;
 }) {
   const { pathname } = useLocation();
+  const { user, logout } = useAuth();
+  const initials = (user?.nombre ?? "?")
+    .split(/\s+/)
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -36,10 +45,10 @@ export function AppShell({
               />
             </div>
             <div className="leading-tight">
-              <p className="text-[13px] font-semibold tracking-tight text-foreground">Suralogic</p>
+              <p className="text-[13px] font-semibold tracking-tight text-foreground">Flux Ops</p>
               <div className="flex items-center gap-1.5">
                 <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                  Insights
+                  AI Copilot
                 </p>
                 <span
                   className="rounded-sm px-1 py-px text-[8px] font-bold uppercase tracking-wider"
@@ -48,7 +57,7 @@ export function AppShell({
                     background: "color-mix(in oklab, var(--owner) 14%, transparent)",
                   }}
                 >
-                  Owner
+                  {user?.rol ?? "Owner"}
                 </span>
               </div>
             </div>
@@ -70,9 +79,14 @@ export function AppShell({
                 style={{ background: "var(--owner)" }}
               />
             </button>
-            <div className="ml-1 grid size-8 place-items-center rounded-full bg-accent text-[11px] font-semibold text-foreground ring-1 ring-border">
-              JR
-            </div>
+            <button
+              onClick={logout}
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+              className="ml-1 grid size-8 place-items-center rounded-full bg-accent text-[11px] font-semibold text-foreground ring-1 ring-border transition-colors hover:bg-primary hover:text-primary-foreground"
+            >
+              {initials || <LogOut className="size-4" />}
+            </button>
           </div>
         </div>
 
@@ -81,11 +95,13 @@ export function AppShell({
           <button className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card">
           <div className="flex items-center gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
-              SL
+              FO
             </span>
             <div className="leading-tight">
               <p className="text-[13px] font-medium text-foreground">Mi negocio</p>
-              <p className="text-[10px] text-muted-foreground">Datos en tiempo real</p>
+              <p className="text-[10px] text-muted-foreground">
+                {user ? `Sesión · ${user.nombre}` : "Datos en tiempo real"}
+              </p>
             </div>
           </div>
             <ChevronDown className="size-4 text-muted-foreground" />

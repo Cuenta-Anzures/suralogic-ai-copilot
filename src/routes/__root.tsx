@@ -3,12 +3,16 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  useLocation,
   useRouter,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
+import { AuthProvider, useAuth } from "@/lib/auth";
+import { LoginScreen } from "@/components/auth/LoginScreen";
 
 function NotFoundComponent() {
   return (
@@ -72,21 +76,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Suralogic Insights — Copiloto inteligente del negocio" },
-      { name: "description", content: "Sistema multi-negocio con dashboards, IA y analítica predictiva para PyMEs." },
-      { name: "author", content: "Suralogic" },
+      { title: "Flux Ops AI Copilot — Tu gerente digital" },
+      {
+        name: "description",
+        content:
+          "Copiloto inteligente que analiza tu negocio, predice tendencias y recomienda decisiones.",
+      },
+      { name: "author", content: "Flux Ops" },
       { name: "theme-color", content: "#0f0f12" },
-      { property: "og:title", content: "Suralogic Insights" },
-      { property: "og:description", content: "El copiloto inteligente de tu negocio." },
+      { property: "og:title", content: "Flux Ops AI Copilot" },
+      { property: "og:description", content: "El gerente digital de tu negocio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -103,7 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <HeadContent />
       </head>
@@ -115,12 +119,48 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { user, ready } = useAuth();
+  const { pathname } = useLocation();
+
+  // Mostrar nada mientras hidratamos la sesión desde localStorage
+  if (!ready) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background">
+        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!user) return <LoginScreen />;
+
+  // El SSR puede pintar /login antes de hidratar; si el usuario ya tiene sesión
+  // y la URL es /login, simplemente mostramos el resto de la app.
+  if (pathname === "/login") {
+    return <RedirectHome />;
+  }
+
+  return <>{children}</>;
+}
+
+function RedirectHome() {
+  const router = useRouter();
+  useEffect(() => {
+    router.navigate({ to: "/" });
+  }, [router]);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthProvider>
+        <AuthGate>
+          <Outlet />
+        </AuthGate>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

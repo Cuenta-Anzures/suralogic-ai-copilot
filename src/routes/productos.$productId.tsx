@@ -1,59 +1,55 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
-import { Card, StatusPill, Delta } from "@/components/suralogic/primitives";
-import { Sparkline, ForecastLine } from "@/components/suralogic/charts";
-import { inventory } from "@/data/mockData";
-import { ChevronLeft, Sparkles, Package, TrendingUp, AlertTriangle } from "lucide-react";
+import { Card, StatusPill, SectionHeader } from "@/components/suralogic/primitives";
+import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { ChevronLeft, Loader2, Package, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/productos/$productId")({
   head: ({ params }) => ({
     meta: [
-      { title: `Producto ${params.productId} · Suralogic` },
-      {
-        name: "description",
-        content: "Detalle de producto: historial de ventas, predicción de demanda y recomendaciones de IA.",
-      },
+      { title: `Producto ${params.productId} · Flux Ops` },
+      { name: "description", content: "Detalle del producto, ventas y stock." },
     ],
   }),
-  loader: ({ params }) => {
-    const product = inventory.find((p) => p.id === params.productId);
-    if (!product) throw notFound();
-    return { product };
-  },
   component: ProductoDetalle,
-  notFoundComponent: () => (
-    <AppShell greeting="Unidad no encontrada">
-      <Card>
-        <p className="text-sm text-muted-foreground">
-          Esta unidad no está registrada en tu inventario.
-        </p>
-        <Link to="/inventario" className="mt-3 inline-block text-[12px] font-medium text-primary">
-          ← Volver al inventario
-        </Link>
-      </Card>
-    </AppShell>
-  ),
-  errorComponent: ({ error }) => (
-    <AppShell greeting="Algo salió mal">
-      <Card>
-        <p className="text-sm text-muted-foreground">{error.message}</p>
-      </Card>
-    </AppShell>
-  ),
 });
 
-const forecastData = [
-  { d: "Jun", real: 40 },
-  { d: "Jul", real: 40 },
-  { d: "Ago", real: 48 },
-  { d: "Sep", real: 40, forecast: 40 },
-  { d: "Oct", forecast: 48 },
-  { d: "Nov", forecast: 56 },
-  { d: "Dic", forecast: 48 },
-];
-
 function ProductoDetalle() {
-  const { product: p } = Route.useLoaderData();
+  const { productId } = Route.useParams();
+  const { data: businesses } = useBusinesses();
+  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+
+  if (isLoading || !snap) {
+    return (
+      <AppShell>
+        <div className="grid place-items-center py-20">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  const invItems = snap.inventory.filter((i) => i.id === productId);
+  const stockItem = invItems[0];
+  const product = snap.products.find((p) => p.id === productId);
+  const sales = snap.sales.filter((s) => s.product_id === productId);
+  const metric = snap.topProductos.find((p) => p.id === productId);
+
+  if (!stockItem && !product) {
+    return (
+      <AppShell greeting="Producto no encontrado">
+        <Card>
+          <p className="text-sm text-muted-foreground">No existe en el catálogo.</p>
+          <Link to="/inventario" className="mt-3 inline-block text-[12px] font-medium text-primary">
+            ← Volver al inventario
+          </Link>
+        </Card>
+      </AppShell>
+    );
+  }
+
+  const name = product?.nombre ?? stockItem?.nombre ?? "Producto";
+  const danger = stockItem ? stockItem.stock_actual <= stockItem.stock_minimo : false;
 
   return (
     <AppShell>
@@ -64,116 +60,81 @@ function ProductoDetalle() {
         <ChevronLeft className="size-4" /> Inventario
       </Link>
 
-      {/* Hero */}
       <Card className="sl-fade-up">
-        <div className="grid aspect-[5/3] w-full place-items-center rounded-xl bg-gradient-to-br from-accent to-card text-6xl">
-          {p.image}
+        <div className="grid aspect-[5/3] w-full place-items-center rounded-xl bg-gradient-to-br from-accent to-card">
+          <Package className="size-12 text-muted-foreground" />
         </div>
         <div className="mt-4 flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-mono text-muted-foreground">FOLIO {p.sku}</p>
-            <h2 className="mt-0.5 text-[18px] font-semibold tracking-tight text-foreground">
-              {p.name}
-            </h2>
-            <p className="text-[12px] text-muted-foreground">{p.category}</p>
+            <p className="text-[10px] font-mono text-muted-foreground">SKU {productId}</p>
+            <h2 className="mt-0.5 text-[18px] font-semibold tracking-tight text-foreground">{name}</h2>
+            {product && (
+              <p className="text-[12px] text-muted-foreground">${product.precio.toLocaleString("es-MX")}</p>
+            )}
           </div>
-          <StatusPill
-            label={p.status === "danger" ? "Riesgo" : p.status === "warning" ? "Lento" : "Saludable"}
-            tone={p.status}
-          />
+          {stockItem && (
+            <StatusPill label={danger ? "Reponer" : "OK"} tone={danger ? "danger" : "success"} />
+          )}
         </div>
       </Card>
 
-      {/* AI recommendation */}
-      <Card className="mt-4 border-l-2 border-l-primary bg-primary/[0.04] sl-fade-up">
-        <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
-            <Sparkles className="size-4" />
+      {metric && (
+        <Card className="mt-4 border-l-2 border-l-primary bg-primary/[0.04] sl-fade-up">
+          <div className="flex items-start gap-3">
+            <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+              <Sparkles className="size-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                Insight IA
+              </p>
+              <p className="mt-0.5 text-[13px] font-semibold text-foreground">
+                {metric.share.toFixed(1)}% de los ingresos provienen de este producto.
+              </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                {metric.unidades} unidades vendidas en {metric.operaciones} operaciones. Total: {fmtCompact(metric.total)}.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
-              Recomendación IA
-            </p>
-            <p className="mt-0.5 text-[13px] font-semibold text-foreground">
-              {p.status === "danger"
-                ? "Unidad subutilizada: prospectar nuevos clientes."
-                : p.status === "warning"
-                ? "Programa mantenimiento preventivo este mes."
-                : "Unidad rentable: considera replicar el modelo."}
-            </p>
-            <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-              Lleva <span className="text-foreground">{p.days} días</span> activos acumulados con{" "}
-              <span className="text-foreground">{p.stock}% utilización</span> YTD.
-            </p>
-            <button className="mt-2 inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground">
-              Ver bitácora completa
-            </button>
-          </div>
-        </div>
-      </Card>
-
-      {/* Stats */}
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Utilización</p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.stock}%</p>
-          <p className="text-[10px] text-muted-foreground">meta {p.min}%</p>
         </Card>
-        <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días activos</p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{p.days}</p>
-          <Delta value={2.1} />
-        </Card>
-        <Card>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rotación</p>
-          <p className="mt-1 text-lg font-semibold text-foreground">{p.rotation}</p>
-          <p className="text-[10px] text-muted-foreground">inventario</p>
-        </Card>
-      </div>
+      )}
 
-      {/* Sales history */}
-      <Card className="mt-4 sl-fade-up">
-        <div className="mb-2 flex items-center justify-between">
-          <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Historial</h3>
-            <p className="text-[11px] text-muted-foreground">Últimos 7 meses · utilización %</p>
-          </div>
-          <Delta value={p.status === "danger" ? -18 : 12} />
-        </div>
-        <div className="h-16">
-          <Sparkline data={p.trend} tone={p.status === "danger" ? "danger" : "primary"} />
-        </div>
-      </Card>
-
-      {/* Forecast */}
-      <Card className="mt-4 sl-fade-up">
-        <h3 className="text-[14px] font-semibold text-foreground">Forecast de ingresos</h3>
-        <p className="text-[11px] text-muted-foreground">Sólida: real · punteada: predicción IA</p>
-        <div className="mt-3">
-          <ForecastLine data={forecastData} />
-        </div>
-      </Card>
-
-      {/* Movements */}
-      <Card className="mt-4 sl-fade-up">
-        <h3 className="mb-3 text-[14px] font-semibold text-foreground">Eventos recientes</h3>
-        <ul className="space-y-3">
-          {[
-            { icon: Package, label: "Recolección de unidad", qty: "—", time: "Ayer 14:20" },
-            { icon: TrendingUp, label: "Operación facturada", qty: "+$40K", time: "Hoy 11:05" },
-            { icon: AlertTriangle, label: "Mantenimiento programado", qty: "-$2.5K", time: "Hoy 09:48" },
-          ].map((m, i) => (
-            <li key={i} className="flex items-center gap-3">
-              <div className="grid size-8 place-items-center rounded-lg bg-accent text-muted-foreground">
-                <m.icon className="size-4" />
+      {invItems.length > 0 && (
+        <Card className="mt-4 sl-fade-up">
+          <SectionHeader title="Stock" hint={`${invItems.length} variante(s)`} />
+          <div className="space-y-2">
+            {invItems.map((i) => (
+              <div key={`${i.id}-${i.talla}`} className="flex items-center justify-between text-[12px]">
+                <span className="text-muted-foreground">Talla {i.talla || "Unitalla"}</span>
+                <span className="font-mono tabular-nums text-foreground">
+                  {i.stock_actual} / mín {i.stock_minimo}
+                </span>
               </div>
-              <div className="flex-1">
-                <p className="text-[12px] text-foreground">{m.label}</p>
-                <p className="text-[10px] text-muted-foreground">{m.time}</p>
-              </div>
-              <span className="font-mono text-[12px] text-foreground">{m.qty}</span>
-            </li>
-          ))}
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <Card className="mt-4 sl-fade-up">
+        <SectionHeader title="Últimas ventas" hint={`${sales.length} en total`} />
+        <ul className="space-y-2">
+          {sales
+            .slice()
+            .sort((a, b) => (b.created_at?.getTime() ?? 0) - (a.created_at?.getTime() ?? 0))
+            .slice(0, 8)
+            .map((s) => (
+              <li key={s.id} className="flex items-center justify-between text-[12px]">
+                <div>
+                  <p className="text-foreground">{s.staff_nombre}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {s.created_at?.toLocaleDateString("es-MX")} · {s.payment_method}
+                  </p>
+                </div>
+                <span className="font-mono tabular-nums text-foreground">
+                  ${s.total.toLocaleString("es-MX")}
+                </span>
+              </li>
+            ))}
         </ul>
       </Card>
     </AppShell>

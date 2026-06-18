@@ -1,66 +1,57 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, StatusPill } from "@/components/suralogic/primitives";
-import { Sparkline } from "@/components/suralogic/charts";
-import { inventory } from "@/data/mockData";
-import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react";
+import { useBusinesses, useSnapshot } from "@/components/suralogic/hooks";
+import { Search, Loader2, Package } from "lucide-react";
 
 export const Route = createFileRoute("/inventario")({
   head: () => ({
     meta: [
-      { title: "Inventario inteligente · Suralogic" },
-      {
-        name: "description",
-        content:
-          "Stock, rotación, márgenes y alertas de desabasto por producto con indicadores visuales.",
-      },
+      { title: "Inventario · Flux Ops" },
+      { name: "description", content: "Stock actual, alertas de reposición y desempeño por producto." },
     ],
   }),
   component: Inventario,
 });
 
-const chips = ["Todos", "Riesgo", "Lento", "Saludable"];
+const chips = ["Todos", "Riesgo", "Saludable"] as const;
+type Chip = (typeof chips)[number];
 
 function Inventario() {
-  const [chip, setChip] = useState("Todos");
-  const [view, setView] = useState<"cards" | "list">("cards");
+  const { data: businesses } = useBusinesses();
+  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+  const [chip, setChip] = useState<Chip>("Todos");
+  const [query, setQuery] = useState("");
 
-  const filtered = inventory.filter((p) => {
-    if (chip === "Todos") return true;
-    if (chip === "Riesgo") return p.status === "danger";
-    if (chip === "Lento") return p.status === "warning";
-    if (chip === "Saludable") return p.status === "success";
-    return p.category === chip;
-  });
+  const items = useMemo(() => {
+    if (!snap) return [];
+    return snap.inventory
+      .map((i) => {
+        const danger = i.stock_actual <= i.stock_minimo;
+        return { ...i, danger };
+      })
+      .filter((i) => {
+        if (chip === "Riesgo" && !i.danger) return false;
+        if (chip === "Saludable" && i.danger) return false;
+        if (query && !i.nombre.toLowerCase().includes(query.toLowerCase())) return false;
+        return true;
+      });
+  }, [snap, chip, query]);
 
   return (
-    <AppShell
-      greeting="Inventario"
-      subtitle="Unidades activas, utilización acumulada y alertas de desempeño."
-    >
+    <AppShell greeting="Inventario" subtitle="Stock actual, mínimos y alertas de reposición.">
       {/* Search */}
       <div className="mt-2 flex items-center gap-2">
         <div className="flex flex-1 items-center gap-2 rounded-xl bg-card/70 px-3 py-2.5 ring-1 ring-border">
           <Search className="size-4 text-muted-foreground" />
           <input
-            placeholder="Buscar unidad…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar producto…"
             className="w-full bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
         </div>
-        <button
-          aria-label="Filtros"
-          className="grid size-11 place-items-center rounded-xl bg-card/70 text-muted-foreground ring-1 ring-border"
-        >
-          <SlidersHorizontal className="size-4" />
-        </button>
-        <button
-          aria-label="Cambiar vista"
-          onClick={() => setView((v) => (v === "cards" ? "list" : "cards"))}
-          className="grid size-11 place-items-center rounded-xl bg-card/70 text-muted-foreground ring-1 ring-border"
-        >
-          {view === "cards" ? <List className="size-4" /> : <LayoutGrid className="size-4" />}
-        </button>
       </div>
 
       {/* Chips */}
@@ -81,81 +72,75 @@ function Inventario() {
         ))}
       </div>
 
-      <div className={view === "cards" ? "mt-4 space-y-3" : "mt-4 space-y-1.5"}>
-        {filtered.map((p) =>
-          view === "cards" ? (
-            <Link
-              key={p.id}
-              to="/productos/$productId"
-              params={{ productId: p.id }}
-              className="block sl-fade-up"
-            >
-              <Card>
-                <div className="flex items-center gap-3">
-                  <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-accent text-2xl">
-                    {p.image}
+      {isLoading || !snap ? (
+        <div className="grid place-items-center py-16">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : (
+        <div className="mt-4 space-y-2">
+          {items.length === 0 && (
+            <Card>
+              <p className="text-[12px] text-muted-foreground">Sin resultados.</p>
+            </Card>
+          )}
+          {items.map((p) => {
+            const pct = p.stock_minimo ? Math.min(100, (p.stock_actual / Math.max(p.stock_minimo, 1)) * 100) : 100;
+            const tone = p.danger ? "danger" : pct < 200 ? "warning" : "success";
+            return (
+              <Link
+                key={p.id}
+                to="/productos/$productId"
+                params={{ productId: p.id }}
+                className="block sl-fade-up"
+              >
+                <Card>
+                  <div className="flex items-center gap-3">
+                    <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-muted-foreground">
+                      <Package className="size-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[14px] font-semibold text-foreground">{p.nombre}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {p.unidad} · talla {p.talla || "Unitalla"}
+                      </p>
+                    </div>
+                    <StatusPill
+                      label={p.danger ? "Reponer" : "OK"}
+                      tone={tone as "danger" | "warning" | "success"}
+                    />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-foreground">{p.name}</p>
-                    <p className="font-mono text-[10px] text-muted-foreground">{p.sku}</p>
-                    <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-                      <span>{p.category}</span>
-                      <span>·</span>
-                      <span>{p.days}d activos</span>
+                  <div className="mt-3 grid grid-cols-3 gap-3 border-t border-border/60 pt-3">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Stock</p>
+                      <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                        {p.stock_actual}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Mínimo</p>
+                      <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                        {p.stock_minimo}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Cobertura</p>
+                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-accent">
+                        <div
+                          className={
+                            "h-full " +
+                            (p.danger ? "bg-destructive" : "bg-primary")
+                          }
+                          style={{ width: `${Math.min(100, pct)}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <StatusPill
-                    label={
-                      p.status === "danger" ? "Riesgo" : p.status === "warning" ? "Lento" : "OK"
-                    }
-                    tone={p.status}
-                  />
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-3 border-t border-border/60 pt-3">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Utiliz.</p>
-                    <p className="text-[13px] font-semibold tabular-nums text-foreground">
-                      {p.stock}%
-                      <span className="text-[10px] font-normal text-muted-foreground"> / {p.min}%</span>
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Días</p>
-                    <p className="text-[13px] font-semibold tabular-nums text-foreground">
-                      {p.days}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tendencia</p>
-                    <Sparkline data={p.trend} tone={p.status === "danger" ? "danger" : "primary"} />
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ) : (
-            <Link
-              key={p.id}
-              to="/productos/$productId"
-              params={{ productId: p.id }}
-              className="flex items-center gap-3 rounded-xl bg-card/40 px-3 py-2 ring-1 ring-border sl-fade-up"
-            >
-              <span className="grid size-9 place-items-center rounded-lg bg-accent text-base">
-                {p.image}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-medium text-foreground">{p.name}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {p.sku} · {p.stock}% utiliz.
-                </p>
-              </div>
-              <StatusPill
-                label={p.status === "danger" ? "!" : p.status === "warning" ? "~" : "✓"}
-                tone={p.status}
-              />
-            </Link>
-          ),
-        )}
-      </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </AppShell>
   );
 }

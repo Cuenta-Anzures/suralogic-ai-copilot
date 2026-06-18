@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card } from "@/components/suralogic/primitives";
 import { Sparkles, Send, Trash2, AlertTriangle, Loader2 } from "lucide-react";
-import { getBusinessSnapshot, buildAiContext, listBusinesses } from "@/lib/dataSource";
+import { buildAiContext } from "@/lib/dataSource";
+import { useBusinesses, useSnapshot } from "@/components/suralogic/hooks";
 import {
   streamOllamaChat,
   buildSystemPrompt,
@@ -16,20 +16,20 @@ import {
 export const Route = createFileRoute("/copiloto")({
   head: () => ({
     meta: [
-      { title: "Copiloto IA · Suralogic" },
-      { name: "description", content: "Chat con tu negocio. Pregúntale a la IA qué está pasando, por qué y qué hacer." },
+      { title: "Copiloto IA · Flux Ops" },
+      { name: "description", content: "Chat con tu negocio. Conectado a Ollama local." },
     ],
   }),
   component: Copiloto,
 });
 
-const STORAGE_KEY = "suralogic.copiloto.messages.v1";
+const STORAGE_KEY = "fluxops.copiloto.messages.v1";
 
 const suggestions = [
-  "¿Por qué bajaron mis ventas?",
-  "¿Qué productos generan más utilidad?",
+  "¿Por qué subieron mis ventas?",
+  "¿Qué productos generan más ingresos?",
   "¿Qué debo reabastecer?",
-  "¿Cómo terminará el mes si sigue la tendencia?",
+  "¿Quién es mi mejor vendedor?",
 ];
 
 function loadMessages(): ChatMessage[] {
@@ -51,24 +51,13 @@ function Copiloto() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const { data: businesses } = useQuery({
-    queryKey: ["businesses"],
-    queryFn: listBusinesses,
-    staleTime: 5 * 60 * 1000,
-  });
-  const activeBusiness = businesses?.[0];
-
-  const { data: snapshot } = useQuery({
-    queryKey: ["snapshot", activeBusiness?.id],
-    queryFn: () => getBusinessSnapshot(activeBusiness!.id),
-    enabled: !!activeBusiness,
-    staleTime: 60 * 1000,
-  });
+  const { data: businesses } = useBusinesses();
+  const { data: snapshot } = useSnapshot(businesses?.[0]?.id);
 
   const systemPrompt = useMemo(() => {
-    if (!snapshot || !activeBusiness) return null;
-    return buildSystemPrompt(buildAiContext(snapshot, activeBusiness.name));
-  }, [snapshot, activeBusiness]);
+    if (!snapshot) return null;
+    return buildSystemPrompt(buildAiContext(snapshot));
+  }, [snapshot]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -137,7 +126,7 @@ function Copiloto() {
   return (
     <AppShell
       greeting="Copiloto IA"
-      subtitle="Chat conectado a las métricas agregadas de tu negocio. Funciona con Ollama local."
+      subtitle="Conversación con las métricas agregadas de tu negocio. Potenciado por Ollama local."
     >
       <Card className="mb-3 flex items-center justify-between text-[11px] text-muted-foreground">
         <div className="flex items-center gap-2">
@@ -166,11 +155,9 @@ function Copiloto() {
             <div className="mx-auto grid size-10 place-items-center rounded-full bg-primary/15 text-primary">
               <Sparkles className="size-5" />
             </div>
-            <p className="mt-3 text-[13px] font-medium text-foreground">
-              Pregúntale a tu negocio
-            </p>
+            <p className="mt-3 text-[13px] font-medium text-foreground">Pregúntale a tu negocio</p>
             <p className="mt-1 text-[11px] text-muted-foreground">
-              La IA responde sobre métricas agregadas de Flux Ops.
+              La IA responde con las métricas agregadas de Flux Ops.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {suggestions.map((s) => (
@@ -192,7 +179,7 @@ function Copiloto() {
             className={
               m.role === "user"
                 ? "ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-[13px] text-primary-foreground"
-                : "mr-auto max-w-[90%] text-[13px] leading-relaxed text-foreground"
+                : "mr-auto max-w-[90%] text-[13px] leading-relaxed text-foreground whitespace-pre-wrap"
             }
           >
             {m.content || (streaming && i === messages.length - 1 ? (

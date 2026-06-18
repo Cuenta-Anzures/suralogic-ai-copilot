@@ -9,17 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NegociosRouteImport } from './routes/negocios'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as EquipoRouteImport } from './routes/equipo'
 import { Route as CopilotoRouteImport } from './routes/copiloto'
 import { Route as AnaliticaRouteImport } from './routes/analitica'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductosProductIdRouteImport } from './routes/productos.$productId'
 
-const NegociosRoute = NegociosRouteImport.update({
-  id: '/negocios',
-  path: '/negocios',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventarioRoute = InventarioRouteImport.update({
@@ -30,6 +31,11 @@ const InventarioRoute = InventarioRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipoRoute = EquipoRouteImport.update({
+  id: '/equipo',
+  path: '/equipo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CopilotoRoute = CopilotoRouteImport.update({
@@ -57,18 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
   '/copiloto': typeof CopilotoRoute
+  '/equipo': typeof EquipoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
+  '/login': typeof LoginRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
   '/copiloto': typeof CopilotoRoute
+  '/equipo': typeof EquipoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
+  '/login': typeof LoginRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesById {
@@ -76,9 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analitica': typeof AnaliticaRoute
   '/copiloto': typeof CopilotoRoute
+  '/equipo': typeof EquipoRoute
   '/insights': typeof InsightsRoute
   '/inventario': typeof InventarioRoute
-  '/negocios': typeof NegociosRoute
+  '/login': typeof LoginRoute
   '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRouteTypes {
@@ -87,27 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/analitica'
     | '/copiloto'
+    | '/equipo'
     | '/insights'
     | '/inventario'
-    | '/negocios'
+    | '/login'
     | '/productos/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/analitica'
     | '/copiloto'
+    | '/equipo'
     | '/insights'
     | '/inventario'
-    | '/negocios'
+    | '/login'
     | '/productos/$productId'
   id:
     | '__root__'
     | '/'
     | '/analitica'
     | '/copiloto'
+    | '/equipo'
     | '/insights'
     | '/inventario'
-    | '/negocios'
+    | '/login'
     | '/productos/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -115,19 +127,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnaliticaRoute: typeof AnaliticaRoute
   CopilotoRoute: typeof CopilotoRoute
+  EquipoRoute: typeof EquipoRoute
   InsightsRoute: typeof InsightsRoute
   InventarioRoute: typeof InventarioRoute
-  NegociosRoute: typeof NegociosRoute
+  LoginRoute: typeof LoginRoute
   ProductosProductIdRoute: typeof ProductosProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/negocios': {
-      id: '/negocios'
-      path: '/negocios'
-      fullPath: '/negocios'
-      preLoaderRoute: typeof NegociosRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventario': {
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipo': {
+      id: '/equipo'
+      path: '/equipo'
+      fullPath: '/equipo'
+      preLoaderRoute: typeof EquipoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/copiloto': {
@@ -179,9 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnaliticaRoute: AnaliticaRoute,
   CopilotoRoute: CopilotoRoute,
+  EquipoRoute: EquipoRoute,
   InsightsRoute: InsightsRoute,
   InventarioRoute: InventarioRoute,
-  NegociosRoute: NegociosRoute,
+  LoginRoute: LoginRoute,
   ProductosProductIdRoute: ProductosProductIdRoute,
 }
 export const routeTree = rootRouteImport
