@@ -10,115 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as InventarioRouteImport } from './routes/inventario'
-import { Route as InsightsRouteImport } from './routes/insights'
-import { Route as CopilotoRouteImport } from './routes/copiloto'
-import { Route as AnaliticaRouteImport } from './routes/analitica'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductosProductIdRouteImport } from './routes/productos.$productId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventarioRoute = InventarioRouteImport.update({
-  id: '/inventario',
-  path: '/inventario',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InsightsRoute = InsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CopilotoRoute = CopilotoRouteImport.update({
-  id: '/copiloto',
-  path: '/copiloto',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnaliticaRoute = AnaliticaRouteImport.update({
-  id: '/analitica',
-  path: '/analitica',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductosProductIdRoute = ProductosProductIdRouteImport.update({
-  id: '/productos/$productId',
-  path: '/productos/$productId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/analitica': typeof AnaliticaRoute
-  '/copiloto': typeof CopilotoRoute
-  '/insights': typeof InsightsRoute
-  '/inventario': typeof InventarioRoute
   '/login': typeof LoginRoute
-  '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/analitica': typeof AnaliticaRoute
-  '/copiloto': typeof CopilotoRoute
-  '/insights': typeof InsightsRoute
-  '/inventario': typeof InventarioRoute
   '/login': typeof LoginRoute
-  '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/analitica': typeof AnaliticaRoute
-  '/copiloto': typeof CopilotoRoute
-  '/insights': typeof InsightsRoute
-  '/inventario': typeof InventarioRoute
   '/login': typeof LoginRoute
-  '/productos/$productId': typeof ProductosProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/analitica'
-    | '/copiloto'
-    | '/insights'
-    | '/inventario'
-    | '/login'
-    | '/productos/$productId'
+  fullPaths: '/login'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/analitica'
-    | '/copiloto'
-    | '/insights'
-    | '/inventario'
-    | '/login'
-    | '/productos/$productId'
-  id:
-    | '__root__'
-    | '/'
-    | '/analitica'
-    | '/copiloto'
-    | '/insights'
-    | '/inventario'
-    | '/login'
-    | '/productos/$productId'
+  to: '/login'
+  id: '__root__' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AnaliticaRoute: typeof AnaliticaRoute
-  CopilotoRoute: typeof CopilotoRoute
-  InsightsRoute: typeof InsightsRoute
-  InventarioRoute: typeof InventarioRoute
   LoginRoute: typeof LoginRoute
-  ProductosProductIdRoute: typeof ProductosProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,59 +48,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventario': {
-      id: '/inventario'
-      path: '/inventario'
-      fullPath: '/inventario'
-      preLoaderRoute: typeof InventarioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/insights': {
-      id: '/insights'
-      path: '/insights'
-      fullPath: '/insights'
-      preLoaderRoute: typeof InsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/copiloto': {
-      id: '/copiloto'
-      path: '/copiloto'
-      fullPath: '/copiloto'
-      preLoaderRoute: typeof CopilotoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/analitica': {
-      id: '/analitica'
-      path: '/analitica'
-      fullPath: '/analitica'
-      preLoaderRoute: typeof AnaliticaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/productos/$productId': {
-      id: '/productos/$productId'
-      path: '/productos/$productId'
-      fullPath: '/productos/$productId'
-      preLoaderRoute: typeof ProductosProductIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AnaliticaRoute: AnaliticaRoute,
-  CopilotoRoute: CopilotoRoute,
-  InsightsRoute: InsightsRoute,
-  InventarioRoute: InventarioRoute,
   LoginRoute: LoginRoute,
-  ProductosProductIdRoute: ProductosProductIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
