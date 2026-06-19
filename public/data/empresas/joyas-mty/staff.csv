@@ -1,0 +1,6 @@
+﻿id,username,password,nombre,rol,activo,created_at,updated_at
+1,Admin,Admin,Administrador,admin,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
+2,Sofia,Sofia,Sofia Mendez,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
+3,Andrea,Andrea,Andrea Vargas,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
+4,Patricia,Patricia,Patricia Solis,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
+5,Roberto,Roberto,Roberto Aguilar,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
