@@ -135,6 +135,8 @@ export type BusinessSummary = {
   name: string;
   initials: string;
   meta: string;
+  slug?: string;
+  isAggregate?: boolean;
 };
 
 // ============================================================
@@ -147,19 +149,20 @@ async function fetchCSV(path: string): Promise<Record<string, string>[]> {
   return parseCSV(await res.text());
 }
 
-async function loadFromCsv(): Promise<{
+async function loadFromCsv(slug: string): Promise<{
   products: Product[];
   inventory: InventoryItem[];
   sales: Sale[];
   tickets: Ticket[];
   staff: StaffMember[];
 }> {
+  const base = `/data/empresas/${slug}`;
   const [products, inventory, sales, tickets, staff] = await Promise.all([
-    fetchCSV("/data/products.csv"),
-    fetchCSV("/data/inventory.csv"),
-    fetchCSV("/data/sales.csv"),
-    fetchCSV("/data/tickets.csv"),
-    fetchCSV("/data/staff.csv"),
+    fetchCSV(`${base}/products.csv`),
+    fetchCSV(`${base}/inventory.csv`),
+    fetchCSV(`${base}/sales.csv`),
+    fetchCSV(`${base}/tickets.csv`),
+    fetchCSV(`${base}/staff.csv`),
   ]);
 
   return {
@@ -496,24 +499,73 @@ function buildSnapshot(raw: Awaited<ReturnType<typeof loadFromCsv>>, businessNam
 // API pública
 // ============================================================
 
-const mockBusinesses: BusinessSummary[] = [
-  { id: "default", name: "Mi negocio", initials: "MN", meta: "Datos en tiempo real" },
-];
+export const ALL_BUSINESSES_ID = "all";
+
+let businessIndexCache: BusinessSummary[] | null = null;
+
+async function loadBusinessIndex(): Promise<BusinessSummary[]> {
+  if (businessIndexCache) return businessIndexCache;
+  const res = await fetch("/data/empresas/index.json", { cache: "no-store" });
+  if (!res.ok) throw new Error("No se pudo cargar /data/empresas/index.json");
+  const json = (await res.json()) as { businesses: BusinessSummary[] };
+  businessIndexCache = json.businesses;
+  return businessIndexCache;
+}
 
 export async function listBusinesses(): Promise<BusinessSummary[]> {
   if (isFirebaseConfigured) {
     // TODO: leer /businesses
   }
-  return mockBusinesses;
+  const list = await loadBusinessIndex();
+  return [
+    { id: ALL_BUSINESSES_ID, slug: ALL_BUSINESSES_ID, name: "Todos los negocios", initials: "··", meta: "Vista consolidada", isAggregate: true },
+    ...list,
+  ];
 }
 
 export async function getBusinessSnapshot(businessId: string): Promise<BusinessSnapshot> {
   if (isFirebaseConfigured) {
     // TODO: leer colecciones Firestore y construir snapshot
   }
-  const raw = await loadFromCsv();
-  const name = mockBusinesses.find((b) => b.id === businessId)?.name ?? "Mi negocio";
-  return buildSnapshot(raw, name);
+  const list = await loadBusinessIndex();
+
+  if (businessId === ALL_BUSINESSES_ID) {
+    const all = await Promise.all(list.map((b) => loadFromCsv(b.slug ?? b.id)));
+    const merged = {
+      products: [] as Product[],
+      inventory: [] as InventoryItem[],
+      sales: [] as Sale[],
+      tickets: [] as Ticket[],
+      staff: [] as StaffMember[],
+    };
+    list.forEach((b, idx) => {
+      const raw = all[idx];
+      const prefix = (b.slug ?? b.id) + ":";
+      merged.products.push(...raw.products.map((p) => ({ ...p, id: prefix + p.id })));
+      merged.inventory.push(...raw.inventory.map((i) => ({ ...i, id: prefix + i.id })));
+      merged.sales.push(
+        ...raw.sales.map((s) => ({
+          ...s,
+          id: prefix + s.id,
+          ticket_id: prefix + s.ticket_id,
+          product_id: prefix + s.product_id,
+          staff_id: prefix + s.staff_id,
+        })),
+      );
+      merged.tickets.push(...raw.tickets.map((t) => ({ ...t, id: prefix + t.id })));
+      merged.staff.push(...raw.staff.map((m) => ({ ...m, id: prefix + m.id })));
+    });
+    const snap = buildSnapshot(merged, "Todos los negocios");
+    snap.businessId = ALL_BUSINESSES_ID;
+    return snap;
+  }
+
+  const meta = list.find((b) => b.id === businessId);
+  if (!meta) throw new Error(`Negocio no encontrado: ${businessId}`);
+  const raw = await loadFromCsv(meta.slug ?? meta.id);
+  const snap = buildSnapshot(raw, meta.name);
+  snap.businessId = meta.id;
+  return snap;
 }
 
 // Contexto enviado al Copiloto IA — métricas agregadas, sin registros crudos.

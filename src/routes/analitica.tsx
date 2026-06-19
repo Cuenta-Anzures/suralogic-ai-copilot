@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, SectionHeader } from "@/components/suralogic/primitives";
 import { ForecastLine, HourlyBars } from "@/components/suralogic/charts";
-import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { useActiveSnapshot, fmtCompact } from "@/components/suralogic/hooks";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/analitica")({
@@ -16,8 +16,7 @@ export const Route = createFileRoute("/analitica")({
 });
 
 function Analitica() {
-  const { data: businesses } = useBusinesses();
-  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+  const { data: snap, isLoading } = useActiveSnapshot();
 
   if (isLoading || !snap) {
     return (

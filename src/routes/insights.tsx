@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card } from "@/components/suralogic/primitives";
-import { useBusinesses, useSnapshot } from "@/components/suralogic/hooks";
+import { useActiveSnapshot } from "@/components/suralogic/hooks";
 import { Sparkles, AlertTriangle, Lightbulb, TrendingUp, Loader2, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/insights")({
@@ -22,8 +22,7 @@ const toneIcon = {
 } as const;
 
 function Insights() {
-  const { data: businesses } = useBusinesses();
-  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+  const { data: snap, isLoading } = useActiveSnapshot();
 
   if (isLoading || !snap) {
     return (

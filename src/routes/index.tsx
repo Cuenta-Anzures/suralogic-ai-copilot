@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, SectionHeader, Delta, StatusPill } from "@/components/suralogic/primitives";
 import { Sparkline, HealthRing, HourlyBars } from "@/components/suralogic/charts";
-import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { useActiveSnapshot, fmtCompact } from "@/components/suralogic/hooks";
 import { useAuth } from "@/lib/auth";
 import {
   Sparkles,
@@ -28,9 +28,7 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   const { user } = useAuth();
-  const { data: businesses } = useBusinesses();
-  const active = businesses?.[0];
-  const { data: snap, isLoading } = useSnapshot(active?.id);
+  const { data: snap, isLoading } = useActiveSnapshot();
 
   if (isLoading || !snap) {
     return (

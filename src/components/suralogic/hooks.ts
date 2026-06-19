@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getBusinessSnapshot, listBusinesses } from "@/lib/dataSource";
+import { useActiveBusiness } from "@/lib/businessContext";
 
 export function useBusinesses() {
   return useQuery({
@@ -16,6 +17,12 @@ export function useSnapshot(businessId: string | undefined) {
     enabled: !!businessId,
     staleTime: 60 * 1000,
   });
+}
+
+/** Snapshot del negocio activo (o consolidado "all"). */
+export function useActiveSnapshot() {
+  const { activeId } = useActiveBusiness();
+  return useSnapshot(activeId);
 }
 
 export function fmtCurrency(n: number): string {

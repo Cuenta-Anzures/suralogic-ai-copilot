@@ -1,0 +1,18 @@
+{
+  "businesses": [
+    {
+      "id": "gorras-mty",
+      "slug": "gorras-mty",
+      "name": "Gorras MTY",
+      "initials": "GM",
+      "meta": "Tienda de gorras y accesorios"
+    },
+    {
+      "id": "joyas-mty",
+      "slug": "joyas-mty",
+      "name": "Joyas MTY",
+      "initials": "JM",
+      "meta": "Joyería oro y plata"
+    }
+  ]
+}
