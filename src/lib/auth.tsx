@@ -33,22 +33,32 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 async function verifyAgainstStaff(username: string, password: string): Promise<AuthUser | null> {
   try {
-    const res = await fetch("/data/staff.csv", { cache: "no-store" });
-    if (!res.ok) throw new Error("No se pudo cargar el directorio de usuarios.");
-    const rows = parseCSV(await res.text());
-    const match = rows.find(
-      (r) =>
-        (r.activo ?? "").toLowerCase() === "true" &&
-        r.username?.toLowerCase() === username.toLowerCase() &&
-        r.password === password,
-    );
-    if (!match) return null;
-    return {
-      id: match.id,
-      username: match.username,
-      nombre: match.nombre,
-      rol: match.rol,
+    const idxRes = await fetch("/data/empresas/index.json", { cache: "no-store" });
+    if (!idxRes.ok) throw new Error("No se pudo cargar el índice de negocios.");
+    const { businesses } = (await idxRes.json()) as {
+      businesses: { id: string; slug?: string }[];
     };
+    for (const b of businesses) {
+      const slug = b.slug ?? b.id;
+      const res = await fetch(`/data/empresas/${slug}/staff.csv`, { cache: "no-store" });
+      if (!res.ok) continue;
+      const rows = parseCSV(await res.text());
+      const match = rows.find(
+        (r) =>
+          (r.activo ?? "").toLowerCase() === "true" &&
+          r.username?.toLowerCase() === username.toLowerCase() &&
+          r.password === password,
+      );
+      if (match) {
+        return {
+          id: `${slug}:${match.id}`,
+          username: match.username,
+          nombre: match.nombre,
+          rol: match.rol,
+        };
+      }
+    }
+    return null;
   } catch {
     // Fallback hardcoded para que la app sea utilizable aún si el CSV no carga.
     if (username === "Admin" && password === "Admin") {
