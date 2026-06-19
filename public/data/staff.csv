@@ -1,4 +1,0 @@
-﻿id,username,password,nombre,rol,activo,created_at,updated_at
-1,Admin,Admin,Administrador,admin,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
-2,Juan,Juan,Juan Perez,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
-3,Jose,Jose,Jose Ramirez,vendedor,true,2026-06-18T00:00:00.000Z,2026-06-18T00:00:00.000Z
