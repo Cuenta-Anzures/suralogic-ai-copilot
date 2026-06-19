@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { LoginScreen } from "@/components/auth/LoginScreen";
+import { BusinessProvider } from "@/lib/businessContext";
 
 function NotFoundComponent() {
   return (
@@ -157,9 +158,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AuthGate>
-          <Outlet />
-        </AuthGate>
+        <BusinessProvider>
+          <AuthGate>
+            <Outlet />
+          </AuthGate>
+        </BusinessProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
