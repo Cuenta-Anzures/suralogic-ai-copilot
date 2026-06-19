@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, SectionHeader, StatusPill } from "@/components/suralogic/primitives";
 import { Sparkline } from "@/components/suralogic/charts";
-import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { useActiveSnapshot, fmtCompact } from "@/components/suralogic/hooks";
 import { Loader2, ShieldCheck, User } from "lucide-react";
 
 export const Route = createFileRoute("/equipo")({
@@ -16,8 +16,7 @@ export const Route = createFileRoute("/equipo")({
 });
 
 function Equipo() {
-  const { data: businesses } = useBusinesses();
-  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+  const { data: snap, isLoading } = useActiveSnapshot();
 
   if (isLoading || !snap) {
     return (

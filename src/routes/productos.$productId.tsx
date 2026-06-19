@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/suralogic/AppShell";
 import { Card, StatusPill, SectionHeader } from "@/components/suralogic/primitives";
-import { useBusinesses, useSnapshot, fmtCompact } from "@/components/suralogic/hooks";
+import { useActiveSnapshot, fmtCompact } from "@/components/suralogic/hooks";
 import { ChevronLeft, Loader2, Package, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/productos/$productId")({
@@ -16,8 +16,7 @@ export const Route = createFileRoute("/productos/$productId")({
 
 function ProductoDetalle() {
   const { productId } = Route.useParams();
-  const { data: businesses } = useBusinesses();
-  const { data: snap, isLoading } = useSnapshot(businesses?.[0]?.id);
+  const { data: snap, isLoading } = useActiveSnapshot();
 
   if (isLoading || !snap) {
     return (

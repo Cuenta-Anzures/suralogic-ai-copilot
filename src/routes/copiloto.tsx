@@ -4,7 +4,7 @@ import { AppShell } from "@/components/suralogic/AppShell";
 import { Card } from "@/components/suralogic/primitives";
 import { Sparkles, Send, Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { buildAiContext } from "@/lib/dataSource";
-import { useBusinesses, useSnapshot } from "@/components/suralogic/hooks";
+import { useActiveSnapshot } from "@/components/suralogic/hooks";
 import {
   streamOllamaChat,
   buildSystemPrompt,
@@ -51,8 +51,7 @@ function Copiloto() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const { data: businesses } = useBusinesses();
-  const { data: snapshot } = useSnapshot(businesses?.[0]?.id);
+  const { data: snapshot } = useActiveSnapshot();
 
   const systemPrompt = useMemo(() => {
     if (!snapshot) return null;
