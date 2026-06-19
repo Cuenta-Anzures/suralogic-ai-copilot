@@ -1,7 +1,9 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Package, Users, BarChart3, Search, Bell, ChevronDown, MessageSquare, LogOut } from "lucide-react";
-import type { ReactNode } from "react";
+import { Home, Package, Users, BarChart3, Search, Bell, ChevronDown, MessageSquare, LogOut, Check, Layers } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
+import { useBusinesses } from "@/components/suralogic/hooks";
+import { useActiveBusiness, ALL_BUSINESSES_ID } from "@/lib/businessContext";
 
 const navItems = [
   { to: "/", label: "Inicio", icon: Home },
@@ -22,6 +24,25 @@ export function AppShell({
 }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
+  const { data: businesses } = useBusinesses();
+  const { activeId, setActiveId } = useActiveBusiness();
+  const [open, setOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  const active =
+    businesses?.find((b) => b.id === activeId) ?? businesses?.[0];
+
   const initials = (user?.nombre ?? "?")
     .split(/\s+/)
     .map((s) => s[0])
@@ -92,20 +113,89 @@ export function AppShell({
 
         {/* Business selector */}
         <div className="mx-auto max-w-2xl px-4 pb-3">
-          <button className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-7 place-items-center rounded-md bg-primary/15 text-primary text-[11px] font-bold">
-              FO
-            </span>
-            <div className="leading-tight">
-              <p className="text-[13px] font-medium text-foreground">Mi negocio</p>
-              <p className="text-[10px] text-muted-foreground">
-                {user ? `Sesión · ${user.nombre}` : "Datos en tiempo real"}
-              </p>
-            </div>
+          <div className="relative" ref={popoverRef}>
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="flex w-full items-center justify-between rounded-xl bg-card/70 px-3.5 py-2.5 text-left ring-1 ring-border transition-colors hover:bg-card"
+              aria-haspopup="listbox"
+              aria-expanded={open}
+            >
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={
+                    "grid size-7 place-items-center rounded-md text-[11px] font-bold " +
+                    (active?.isAggregate
+                      ? "bg-accent text-foreground"
+                      : "bg-primary/15 text-primary")
+                  }
+                >
+                  {active?.isAggregate ? <Layers className="size-3.5" /> : active?.initials ?? "··"}
+                </span>
+                <div className="leading-tight">
+                  <p className="text-[13px] font-medium text-foreground">
+                    {active?.name ?? "Selecciona negocio"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {active?.isAggregate
+                      ? "Consolidado · todos los negocios"
+                      : user
+                      ? `Sesión · ${user.nombre}`
+                      : active?.meta ?? "Datos en tiempo real"}
+                  </p>
+                </div>
+              </div>
+              <ChevronDown
+                className={
+                  "size-4 text-muted-foreground transition-transform " +
+                  (open ? "rotate-180" : "")
+                }
+              />
+            </button>
+
+            {open && businesses && (
+              <div
+                role="listbox"
+                className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-xl border border-border bg-popover shadow-lg shadow-black/30"
+              >
+                {businesses.map((b) => {
+                  const sel = b.id === activeId;
+                  return (
+                    <button
+                      key={b.id}
+                      onClick={() => {
+                        setActiveId(b.id);
+                        setOpen(false);
+                      }}
+                      className={
+                        "flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left transition-colors hover:bg-accent " +
+                        (sel ? "bg-accent/60" : "")
+                      }
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={
+                            "grid size-7 place-items-center rounded-md text-[11px] font-bold " +
+                            (b.isAggregate
+                              ? "bg-accent text-foreground ring-1 ring-border"
+                              : "bg-primary/15 text-primary")
+                          }
+                        >
+                          {b.isAggregate ? <Layers className="size-3.5" /> : b.initials}
+                        </span>
+                        <div className="leading-tight">
+                          <p className="text-[13px] font-medium text-foreground">{b.name}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {b.id === ALL_BUSINESSES_ID ? "Vista consolidada" : b.meta}
+                          </p>
+                        </div>
+                      </div>
+                      {sel && <Check className="size-4 text-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-            <ChevronDown className="size-4 text-muted-foreground" />
-          </button>
         </div>
       </header>
 
